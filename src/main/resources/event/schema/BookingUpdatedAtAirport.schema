@@ -1,0 +1,1346 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema# <http://json-schema.org/draft-04/schema#> ",
+  "title": "easyJet JSON schema for updates to a booking. Inspired by JSONPatch http://jsonpatch.com/ <http://jsonpatch.com/> ",
+  "type": "object",
+  "properties": {
+    "header": {
+      "$ref": "#/definitions/Header"
+    },
+    "body": {
+      "$ref": "#/definitions/Body"
+    }
+  },
+  "required": [
+    "header",
+    "body"
+  ],
+  "definitions": {
+    "Header": {
+      "type": "object",
+      "description": "See http://conf.europe.easyjet.local/display/EI/Message+Headers",
+      "properties": {
+        "messageName": {
+          "type": "string",
+          "description": "Message Name"
+        },
+        "messageVersion": {
+          "type": "string",
+          "description": "Message Version"
+        },
+        "messageGenerationTimestamp": {
+          "type": "string",
+          "description": "Generated Timestamp, ex. 2016-12-13T12:12:12Z "
+        },
+        "messageProducerName": {
+          "type": "string",
+          "description": "Producer Name"
+        },
+        "operationType": {
+          "type": "string",
+          "description": "Operation Type. Possible values are CREATE/UPDATE/DELETE"
+        }
+      },
+      "required": [
+        "messageName",
+        "messageVersion",
+        "messageGenerationTimestamp",
+        "messageProducerName",
+        "operationType"
+      ]
+    },
+    "Body": {
+      "$ref": "#/definitions/Booking"
+    },
+    "Booking": {
+      "type": "object",
+      "description": "The root of the booking",
+      "properties": {
+        "bookingReference": {
+          "type": "string",
+          "description": "Reference for the booking obtained from eRes",
+          "example": "ELXS2BT"
+        },
+        "operations": {
+          "type": "array",
+          "description": "The list of operations describing the changes to the booking. Utilizes a model inspired by JSON Patch.",
+          "items": {
+            "$ref": "#/definitions/operation"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "bookingReference",
+        "operations"
+      ]
+    },
+    "operation": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/passengerNameChangeNotNullable"
+        },
+        {
+          "$ref": "#/definitions/passengerNameChangeNullable"
+        },
+        {
+          "$ref": "#/definitions/bookingContactNameChanged"
+        },
+        {
+          "$ref": "#/definitions/bookingContactAddress"
+        },
+        {
+          "$ref": "#/definitions/bookingContactTicketingOption"
+        },
+        {
+          "$ref": "#/definitions/bookingContactMessageTypeCode"
+        },
+        {
+          "$ref": "#/definitions/bookingContactLanguageCode"
+        },
+        {
+          "$ref": "#/definitions/bookingContactEmailAddress"
+        },
+        {
+          "$ref": "#/definitions/bookingReservationCharge"
+        },
+        {
+          "$ref": "#/definitions/passengerReservationCharge"
+        },
+        {
+          "$ref": "#/definitions/boarding"
+        },
+        {
+          "$ref": "#/definitions/seat"
+        },
+        {
+          "$ref": "#/definitions/holdItems"
+        },
+        {
+          "$ref": "#/definitions/holdItemsTags"
+        },
+        {
+          "$ref": "#/definitions/holdItemsTagsPerPassenger"
+        },
+        {
+          "$ref": "#/definitions/ssrs"
+        },
+        {
+          "$ref": "#/definitions/airsideSecurityStatus"
+        },
+        {
+          "$ref": "#/definitions/passengerCommentsAdd"
+        },
+        {
+          "$ref": "#/definitions/passengerCommentsDelete"
+        },
+        {
+          "$ref": "#/definitions/bookingCommentsAdd"
+        },
+        {
+          "$ref": "#/definitions/bookingCommentsDelete"
+        },
+        {
+          "$ref": "#/definitions/bookingContactPhone"
+        },
+        {
+          "$ref": "#/definitions/ejPluscard"
+        },
+        {
+          "$ref": "#/definitions/infantOnLapAdded"
+        },
+        {
+          "$ref": "#/definitions/infantOnLapRemoved"
+        },
+        {
+          "$ref": "#/definitions/passengerDetails"
+        },
+        {
+          "$ref": "#/definitions/payment"
+        }
+      ]
+    },
+    "passengerNameChangeNotNullable": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/name/(title|lastName)"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "passengerNameChangeNullable": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/name/firstName"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactNameChanged": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/name/(firstName|lastName)"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactAddress": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/address/(addressLine1|addressLine2|city|county_state|country|postalCode)"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactTicketingOption": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/ticketOptionCode"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Ticket option.e.g. Mail, Fax, EMail, Airport etc"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactMessageTypeCode": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/messageTypeCode"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Message type for tickets.e.g. TEXT, HTML"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactLanguageCode": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/languageCode"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 2,
+          "minLength": 2,
+          "description": "Two letter ISO code, For example: EN, DE"
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactEmailAddress": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/emailAddress"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingReservationCharge": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/priceSummary/fees/-"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "amount": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "currencyCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 3,
+              "maxLength": 3
+            },
+            "chargeDateTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "chargeId": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "code",
+            "name",
+            "amount",
+            "currencyCode",
+            "chargeDateTime",
+            "chargeId"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "passengerReservationCharge": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/priceSummary/fees/-"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "name": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "amount": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "currencyCode": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 3,
+              "maxLength": 3
+            },
+            "chargeDateTime": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "chargeId": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "code",
+            "name",
+            "amount",
+            "currencyCode",
+            "chargeDateTime",
+            "chargeId"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "boarding": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/boarding/(passengerBoarded|isEligibleForPriorityBoarding|documentsCheckedFlag)"
+        },
+        "value": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "seat": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "oneOf": [
+            {
+              "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/seat/seatNumber",
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            {
+              "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/seat/(seatSelectedFlag|seatChangedFlag|seatAtGateFlag)",
+              "value": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "holdItems": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/holdItems/(bagsPurchasedPerSector|bagsCheckedIn|baggageWeightPurchasedPerSector|baggageWeightUsedPerSector|sgCheckedIn|sgPurchasedPerSector|lsgPurchasedPerSector|lsgUsedPerSector|lsgWeightPurchasedPerSector|lsgWeightUsedPerSector|poolableWeightPurchasedPerSector|poolableWeightUsedPerSector)"
+        },
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "holdItemsTags": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/holdItemsTags/[A-Za-z\\d\\s]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "bagTag": {
+              "type": "string"
+            },
+            "bagHandlingLocation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "unLoadedFlag": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "limitedReleaseReasonCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "weight": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "isSportingGood": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "isLargeSportGoods": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "bagTag",
+            "bagHandlingLocation",
+            "unLoadedFlag",
+            "limitedReleaseReasonCode",
+            "weight",
+            "isSportingGood",
+            "isLargeSportGoods"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "holdItemsTagsPerPassenger": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/holdItemsTags/[A-Za-z\\d\\s]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "bagTag": {
+              "type": "string"
+            },
+            "bagHandlingLocation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "unLoadedFlag": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "limitedReleaseReasonCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "weight": {
+              "type": [
+                "number",
+                "null"
+              ]
+            },
+            "isSportingGood": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "isLargeSportGoods": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "bagTag",
+            "bagHandlingLocation",
+            "unLoadedFlag",
+            "limitedReleaseReasonCode",
+            "weight",
+            "isSportingGood",
+            "isLargeSportGoods"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "ssrs": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "remove"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/ssrs/[A-Z0-9]+"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ]
+    },
+    "airsideSecurityStatus": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/airsideSecurityStatus/(scanTime|scanStatus|transactionType|refusedReason)"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ]
+    },
+    "passengerCommentsAdd": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/comments/E?[\\d]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "commentCode": {
+              "type": "string"
+            },
+            "commentText": {
+              "type": "string"
+            },
+            "userId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userFirstName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userSurname": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "eResLocationCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "commentCode",
+            "commentText",
+            "userId"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "passengerCommentsDelete": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/comments/E?[\\d]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "commentCode": {
+              "type": "string"
+            },
+            "commentText": {
+              "type": "string"
+            },
+            "userId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userFirstName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userSurname": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "eResLocationCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "rowStatus": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "commentCode",
+            "commentText",
+            "userId",
+            "rowStatus"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingCommentsAdd": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/comments/E?[\\d]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "commentCode": {
+              "type": "string"
+            },
+            "commentText": {
+              "type": "string"
+            },
+            "userId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userFirstName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userSurname": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "eResLocationCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "commentCode",
+            "commentText",
+            "userId"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingCommentsDelete": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/comments/E?[\\d]+"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "commentCode": {
+              "type": "string"
+            },
+            "commentText": {
+              "type": "string"
+            },
+            "userId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userFirstName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "userSurname": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "eResLocationCode": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "rowStatus": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "commentText",
+            "userId",
+            "rowStatus"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "bookingContactPhone": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/bookingContact/phones/"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "phoneType": {
+              "type": "string"
+            },
+            "phoneNumber": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "phoneTypeCode",
+            "phoneNumber"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ]
+    },
+    "ejPluscard": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "replace"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/ejPlusCardNumber"
+        },
+        "value": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "infantOnLapAdded": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/infantsOnLap/-"
+        },
+        "value": {
+          "type": "object",
+          "properties": {
+            "adultPassengerOnFlightId": {
+              "type": "string"
+            },
+            "firstName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "lastName": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "dateOfBirth": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "date"
+            }
+          },
+          "required": [
+            "adultPassengerOnFlightId",
+            "firstName",
+            "lastName",
+            "dateOfBirth"
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "infantOnLapRemoved": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "remove"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/infantsOnLap/[^/]+"
+        }
+      },
+      "required": [
+        "op",
+        "path"
+      ]
+    },
+    "passengerDetails": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add",
+            "replace"
+          ]
+        },
+        "path": {
+          "oneOf": [
+            {
+              "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/(email|phoneNumber)",
+              "value": {
+                "type": "string"
+              }
+            },
+            {
+              "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/countryCode",
+              "value": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            {
+              "pattern": "/body/flights/[A-Z\\d\\s]+/passengers/[^/]+/passengerDetails/lead",
+              "value": {
+                "type": "boolean"
+              }
+            }
+          ]
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "payment": {
+      "properties": {
+        "op": {
+          "type": "string",
+          "enum": [
+            "add"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "/body/payment"
+        },
+        "value": {
+          "type": "array",
+          "description": "Payment transactions associated with the booking",
+          "items": {
+            "$ref": "#/definitions/paymentItem"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "op",
+        "path",
+        "value"
+      ]
+    },
+    "paymentItem": {
+      "type": "object",
+      "description": "A payment transaction related to a booking instance.",
+      "required": [
+        "transactionId"
+      ],
+      "properties": {
+        "transactionId": {
+          "type": "string",
+          "description": "Payment transaction unique reference provided by the Payment Gateway \"paymentId\" response attribute"
+        },
+        "paymentFormCode": {
+          "type": "string",
+          "description": "payment method applicable for this transaction",
+          "example": "Card, CC, Hold, Agent, Check, MIsc, EM, DV, CF, OT, BT"
+        },
+        "paymentDateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Transaction creation date/time."
+        },
+        "paymentStatusTypeCode": {
+          "type": "string",
+          "description": "Represents the payment transaction status",
+          "example": "N, A, R, D, T, Z. N means Not Applicable, A means Available for Settlement, R means Needs Review, D means Declined, T means Travel Assist Payment, Z means Authorized by Channel"
+        },
+        "creditCardAuthorizationNumber": {
+          "type": "string",
+          "description": "Payment Gateway authorization code",
+          "example": "67564543434"
+        },
+        "creditCardCode": {
+          "type": "string",
+          "description": "The payment method type code as provided by the Payment Gateway response",
+          "example": "DL, VI, MC"
+        },
+        "paymentServiceProviderId": {
+          "type": "integer",
+          "description": "The payment provider id as provided by the Payment Gateway response. Default value is 100",
+          "example": 100
+        },
+        "bankName": {
+          "type": "string",
+          "description": "Bank name used in the payment. Populated when \"type\" attribue is \"elv\" or \"bankaccount\""
+        },
+        "cashReceiptNumber": {
+          "type": "string",
+          "description": "Cash receipt number used in the payment. Populated when \"type\" attribue is \"cash\""
+        },
+        "creditCardNumber": {
+          "type": "string",
+          "description": "Card last 4 digits. Populated when \"type\" attribue is \"card\"",
+          "example": "XXXXXXXXXXXX4567"
+        },
+        "nameOnCard": {
+          "type": "string",
+          "description": "Card holder name. Populated when \"type\" attribue is \"card\"",
+          "example": "MR P SMITH"
+        },
+        "creditCardStartDate": {
+          "type": "string",
+          "description": "Card valid from month/year. Format: MM/YY. Populated when \"type\" attribue is \"card\"",
+          "example": "05/16"
+        },
+        "creditCardExpDate": {
+          "type": "string",
+          "description": "Card expiry month/year. Format: MM/YY. Populated when \"type\" attribue is \"card\"",
+          "example": "05/19"
+        },
+        "issueNum": {
+          "type": "string",
+          "description": "Card issue number. Populated when \"type\" attribue is \"card\"",
+          "example": "123"
+        },
+        "fixedTransactionAmount": {
+          "$ref": "#/definitions/PaymentAndCurrency",
+          "description": "fixed transaction amount is the price of the product in its original currency, same as hybris departureAirportAmount.amount"
+        },
+        "paymentAmount": {
+          "$ref": "#/definitions/PaymentAndCurrency",
+          "description": "payment amount is the price at the currency the customer has actually paid. For example a hold bag bought in Amsterdam Airport would be priced in\nEuro and may cost 30 Euros. The fixedTransactionAmount will be 30 Euro however customer chooses to pay in GBP the Payment amount would be say £28.19"
+        },
+        "createdUser": {
+          "$ref": "#/definitions/CreatedUser"
+        }
+      }
+    },
+    "PaymentAndCurrency": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "format": "double",
+          "description": "Payment amount"
+        },
+        "currencyCode": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Currency for the amount specified above."
+        }
+      },
+      "required": [
+        "amount",
+        "currencyCode"
+      ]
+    },
+    "CreatedUser": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "agent user Id"
+        },
+        "userFirstName": {
+          "type": "string"
+        },
+        "userSurname": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "userId",
+        "userFirstName",
+        "userSurname"
+      ]
+    }
+  }
+}

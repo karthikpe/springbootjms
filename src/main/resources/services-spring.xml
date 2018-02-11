@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+   http://www.springframework.org/schema/beans/spring-beans.xsd
+   http://www.springframework.org/schema/util
+   http://www.springframework.org/schema/util/spring-util.xsd
+   http://www.springframework.org/schema/context
+   http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config />
+
+	<bean id="abstractBookingContactNameStrategy" class="com.poc.strategy.AbstractBookingContactNameStrategy" abstract="true" />
+	<bean id="abstractPassengerCommentsStrategy" class="com.poc.strategy.AbstractPassengerCommentsStrategy" abstract="true" />
+	<bean id="abstractPassengerDetailsNameStrategy" class="com.poc.strategy.AbstractPassengerDetailsNameStrategy" abstract="true" />
+
+	<bean id="bookingContactNameStrategy" class="com.poc.strategy.impl.BookingContactNameStrategyImpl" parent="abstractBookingContactNameStrategy" />
+	<bean id="passengerCommentsStrategy" class="com.poc.strategy.impl.PassengerCommentsStrategyImpl" parent="abstractPassengerCommentsStrategy" />
+	<bean id="passengerDetailsNameStrategy" class="com.poc.strategy.impl.PassengerDetailsNameStrategyImpl" parent="abstractPassengerDetailsNameStrategy" />
+
+
+	<alias name="defaultPatternStrategyMap" alias="patternStrategyMap" />
+	<util:map id="defaultPatternStrategyMap">
+	
+		<entry key="/body/flights/[A-Z\d\s]+/passengers/[^/]+/passengerDetails/name/(title|lastName)" value-ref="passengerDetailsNameStrategy" />
+		<entry key="/body/flights/[A-Z\d\s]+/passengers/[^/]+/passengerDetails/name/firstName" value-ref="passengerDetailsNameStrategy" />
+		
+		<entry key="/body/bookingContact/name/(firstName|lastName)" value-ref="bookingContactNameStrategy" />
+		<entry key="/body/bookingContact/address/(addressLine1|addressLine2|city|county_state|country|postalCode)" value-ref="bookingContactNameStrategy" />
+		
+		<entry key="/body/flights/[A-Z\d\s]+/passengers/[^/]+/comments/E?[\d]+" value-ref="passengerCommentsStrategy" />
+	</util:map>
+
+</beans>
