@@ -19,9 +19,8 @@ public class BookingUpdatedEventConsumer {
 	AbstractEventProcessor<BookingUpdatedAtAirportDTO> processor;
 
 	@JmsListener(destination = "${poc.queue}")
-	public void receiveQueue(String json) {
-		LOG.info("Booking updated event consumer data:" + json);
-		BookingUpdatedAtAirportDTO eventDto = JsonUtils.convertToDto(json, BookingUpdatedAtAirportDTO.class);
+	public void receiveQueue(BookingUpdatedAtAirportDTO eventDto) {
+		LOG.info("Booking updated event data:" + JsonUtils.getJson(eventDto));
 		processor.processEventMessage(eventDto);
 	}
 }
