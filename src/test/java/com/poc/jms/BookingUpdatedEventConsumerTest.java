@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.poc.jms.Sender;
+import com.poc.event.airport.booking.update.dto.BookingUpdatedAtAirportDTO;
+import com.poc.utils.JsonUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -17,10 +18,10 @@ public class BookingUpdatedEventConsumerTest {
 
 	@Test
 	public void testSendAndReceiveData() {
-
 		String json = createALEventData();
+		BookingUpdatedAtAirportDTO eventDto = JsonUtils.convertToDto(json, BookingUpdatedAtAirportDTO.class);
 		System.out.println("Sending json data to queue poc.event");
-		sender.send("poc.event", json);
+		sender.send("poc.event", eventDto);
 	}
 
 	private String createALEventData() {
