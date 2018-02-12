@@ -16,7 +16,7 @@ public class BookingUpdatedEventConsumerTest {
 	private Sender sender;
 
 	@Test
-	public void contextLoads() {
+	public void testSendAndReceiveData() {
 
 		String json = createALEventData();
 		System.out.println("Sending json data to queue poc.event");
