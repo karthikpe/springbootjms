@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
@@ -30,7 +29,7 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 	private static String OPERATION_REMOVE = "remove";
 
 	private static Integer DEFAULT_PRIORITY_VALUE = 100;
-	
+
 	@Resource(name = "patternStrategyMap")
 	Map<String, EventStrategy> patternStrategyMap;
 
