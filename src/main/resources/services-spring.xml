@@ -32,20 +32,20 @@
 		<entry key="/body/flights/[A-Z\d\s]+/passengers/[^/]+/comments/E?[\d]+" value-ref="passengerCommentsStrategy" />
 	</util:map>
 
-<!-- Priority values: between 1 and 99, 1 being the highest priority -->
+<!-- Priority values: between 1 and 99, 1 being the highest priority and 100 being the default used in code -->
 	<alias name="defaultAddStrategiesPriority" alias="addStrategiesPriority" />
 	<util:map id="defaultAddStrategiesPriority" value-type="java.lang.Integer">
 		<entry key-ref="passengerCommentsStrategy" value="2" />
 		<entry key-ref="bookingContactNameStrategy" value="3" />
 	</util:map>
 
-<!-- Priority values: between 1 and 99, 1 being the highest priority -->
+<!-- Priority values: between 1 and 99, 1 being the highest priority and 100 being the default used in code -->
 	<alias name="defaultReplaceStrategiesPriority" alias="replaceStrategiesPriority" />
 	<util:map id="defaultReplaceStrategiesPriority" value-type="java.lang.Integer">
 		<entry key-ref="bookingContactNameStrategy" value="10" />
 	</util:map>
 
-<!-- Priority values: between 1 and 99, 1 being the highest priority -->
+<!-- Priority values: between 1 and 99, 1 being the highest priority and 100 being the default used in code -->
 	<alias name="defaultRemoveStrategiesPriority" alias="removeStrategiesPriority" />
 	<util:map id="defaultRemoveStrategiesPriority" value-type="java.lang.Integer">
 		<entry key-ref="passengerCommentsStrategy" value="2" />

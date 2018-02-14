@@ -1,6 +1,7 @@
 package com.poc.processor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +43,7 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 	@Resource(name = "removeStrategiesPriority")
 	Map<EventStrategy, Integer> removeStrategiesPriority;
 
+	
 	public abstract void processEventMessage(EventDto eventDto);
 
 	public OrderModel getOrder(String bookingReference) {
@@ -51,28 +53,14 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 
 	public void processOperations(OrderModel orderModel, Set<Object> operations) {
 
-		Map<String, List<EventStrategy>> oprStrategiesMap = initialize(operations);
+		Map<String, List<EventStrategy>> oprStrategiesMap = initializeStrategies(operations);
 
-		List<EventStrategy> addStrategies = oprStrategiesMap.get(OPERATION_ADD);
-		List<EventStrategy> replaceStrategies = oprStrategiesMap.get(OPERATION_REPLACE);
-		List<EventStrategy> removeStrategies = oprStrategiesMap.get(OPERATION_REMOVE);
-
-		addStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, addStrategiesPriority)));
-		addStrategies.forEach(strategy -> strategy.add(orderModel));
-
-		replaceStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, replaceStrategiesPriority)));
-		replaceStrategies.forEach(strategy -> strategy.update(orderModel));
-
-		removeStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, removeStrategiesPriority)));
-		removeStrategies.forEach(strategy -> strategy.delete(orderModel));
+		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_ADD), getPriorityMap(OPERATION_ADD));
+		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_REPLACE), getPriorityMap(OPERATION_REPLACE));
+		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_REMOVE), getPriorityMap(OPERATION_REMOVE));
 	}
 
-	private Integer getStrategyPriority(EventStrategy key, Map<EventStrategy, Integer> strategiesPriorityMap) {
-		return strategiesPriorityMap.getOrDefault(key, DEFAULT_PRIORITY_VALUE);
-	}
-
-	private Map<String, List<EventStrategy>> initialize(Set<Object> operations) {
-
+	protected Map<String, List<EventStrategy>> initializeStrategies(Set<Object> operations) {
 		Map<String, List<EventStrategy>> oprStrategyMap = new HashMap<>();
 		oprStrategyMap.put(OPERATION_ADD, new ArrayList<>());
 		oprStrategyMap.put(OPERATION_REPLACE, new ArrayList<>());
@@ -95,6 +83,27 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 			oprStrategyMap.get(op).add(matchingStrategy);
 		}
 		return oprStrategyMap;
+	}
+
+	private Map<EventStrategy, Integer> getPriorityMap(String operation) {
+		if (OPERATION_ADD.equals(operation)) {
+			return addStrategiesPriority;
+		} else if (OPERATION_REPLACE.equals(operation)) {
+			return replaceStrategiesPriority;
+		} else if (OPERATION_REMOVE.equals(operation)) {
+			return removeStrategiesPriority;
+		}
+		return Collections.emptyMap();
+	}
+
+	private void processStrategies(OrderModel orderModel, List<EventStrategy> eventStrategies,
+			Map<EventStrategy, Integer> strategiesPriorityMap) {
+		eventStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, strategiesPriorityMap)));
+		eventStrategies.forEach(strategy -> strategy.add(orderModel));
+	}
+
+	private Integer getStrategyPriority(EventStrategy key, Map<EventStrategy, Integer> strategiesPriorityMap) {
+		return strategiesPriorityMap.getOrDefault(key, DEFAULT_PRIORITY_VALUE);
 	}
 
 	private EventStrategy getMatchingStrategy(String path) {
