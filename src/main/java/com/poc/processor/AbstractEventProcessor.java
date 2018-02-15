@@ -12,6 +12,9 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.poc.dto.OrderModel;
 import com.poc.strategy.EventStrategy;
@@ -42,6 +45,9 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 
 	@Resource(name = "removeStrategiesPriority")
 	Map<EventStrategy, Integer> removeStrategiesPriority;
+
+	@Autowired
+	private ApplicationContext applicationContext;
 
 	public abstract void processEventMessage(EventDto eventDto);
 
@@ -116,7 +122,7 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 	private EventStrategy getMatchingStrategy(String path) {
 		for (String pattern : patternStrategyMap.keySet()) {
 			if (Pattern.matches(pattern, path)) {
-				return patternStrategyMap.get(pattern);
+				return applicationContext.getBean(patternStrategyMap.get(pattern).getClass());
 			}
 		}
 		return null;

@@ -16,9 +16,9 @@
 	<bean id="abstractPassengerCommentsStrategy" class="com.poc.strategy.AbstractPassengerCommentsStrategy" abstract="true" />
 	<bean id="abstractPassengerDetailsNameStrategy" class="com.poc.strategy.AbstractPassengerDetailsNameStrategy" abstract="true" />
 
-	<bean id="bookingContactNameStrategy" class="com.poc.strategy.impl.BookingContactNameStrategyImpl" parent="abstractBookingContactNameStrategy" />
-	<bean id="passengerCommentsStrategy" class="com.poc.strategy.impl.PassengerCommentsStrategyImpl" parent="abstractPassengerCommentsStrategy" />
-	<bean id="passengerDetailsNameStrategy" class="com.poc.strategy.impl.PassengerDetailsNameStrategyImpl" parent="abstractPassengerDetailsNameStrategy" />
+	<bean id="bookingContactNameStrategy" class="com.poc.strategy.impl.BookingContactNameStrategyImpl" parent="abstractBookingContactNameStrategy" scope="prototype"/>
+	<bean id="passengerCommentsStrategy" class="com.poc.strategy.impl.PassengerCommentsStrategyImpl" parent="abstractPassengerCommentsStrategy" scope="prototype"/>
+	<bean id="passengerDetailsNameStrategy" class="com.poc.strategy.impl.PassengerDetailsNameStrategyImpl" parent="abstractPassengerDetailsNameStrategy" scope="prototype"/>
 
 
 	<alias name="defaultPatternStrategyMap" alias="patternStrategyMap" />
