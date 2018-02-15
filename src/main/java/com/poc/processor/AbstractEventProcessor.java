@@ -43,7 +43,6 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 	@Resource(name = "removeStrategiesPriority")
 	Map<EventStrategy, Integer> removeStrategiesPriority;
 
-	
 	public abstract void processEventMessage(EventDto eventDto);
 
 	public OrderModel getOrder(String bookingReference) {
@@ -55,9 +54,9 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 
 		Map<String, List<EventStrategy>> oprStrategiesMap = initializeStrategies(operations);
 
-		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_ADD), getPriorityMap(OPERATION_ADD));
-		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_REPLACE), getPriorityMap(OPERATION_REPLACE));
-		processStrategies(orderModel, oprStrategiesMap.get(OPERATION_REMOVE), getPriorityMap(OPERATION_REMOVE));
+		processStrategies(orderModel, oprStrategiesMap, OPERATION_ADD);
+		processStrategies(orderModel, oprStrategiesMap, OPERATION_REPLACE);
+		processStrategies(orderModel, oprStrategiesMap, OPERATION_REMOVE);
 	}
 
 	protected Map<String, List<EventStrategy>> initializeStrategies(Set<Object> operations) {
@@ -96,10 +95,18 @@ public abstract class AbstractEventProcessor<EventDto extends Object> {
 		return Collections.emptyMap();
 	}
 
-	private void processStrategies(OrderModel orderModel, List<EventStrategy> eventStrategies,
-			Map<EventStrategy, Integer> strategiesPriorityMap) {
-		eventStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, strategiesPriorityMap)));
-		eventStrategies.forEach(strategy -> strategy.add(orderModel));
+	private void processStrategies(OrderModel orderModel, Map<String, List<EventStrategy>> oprStrategiesMap,
+			String operation) {
+		List<EventStrategy> eventStrategies = oprStrategiesMap.get(operation);
+		eventStrategies.sort(Comparator.comparing(key -> getStrategyPriority(key, getPriorityMap(operation))));
+
+		if (OPERATION_ADD.equals(operation)) {
+			eventStrategies.forEach(strategy -> strategy.add(orderModel));
+		} else if (OPERATION_REPLACE.equals(operation)) {
+			eventStrategies.forEach(strategy -> strategy.update(orderModel));
+		} else if (OPERATION_REMOVE.equals(operation)) {
+			eventStrategies.forEach(strategy -> strategy.delete(orderModel));
+		}
 	}
 
 	private Integer getStrategyPriority(EventStrategy key, Map<EventStrategy, Integer> strategiesPriorityMap) {
